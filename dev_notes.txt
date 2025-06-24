@@ -1,0 +1,38 @@
+
+nginx cert:
+openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout todo.key -out todo.crt -config openssl.cnf -extensions req_ext
+openssl x509 -in todo.crt -outform DER -out todocert.cer
+check: openssl x509 -in todo.crt -text -noout
+
+pss: devpass
+
+used for dev only
+
+for login:
+https://www.youtube.com/watch?v=X7pGCmVxx10&ab_channel=AlanLands
+https://spring.io/guides/gs/securing-web
+
+
+# Todo Spring Boot Backend
+
+Backend for the Android Todo app.
+- Kotlin
+- Spring Boot
+- Firebase Auth (with JWT)
+- Dev DB: H2
+- Prod DB: PostgreSQL (via Docker)
+
+## Dev Setup Locally
+./gradlew bootRunDev
+## Dockers
+dockerDevUp/dockerDevDown
+
+## Production
+./gradlew bootRunProd
+
+## Dockers
+dockerProdUp/dockerProdDown
+
+
+## Tests
+./gradlew test
