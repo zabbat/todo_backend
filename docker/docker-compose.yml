@@ -1,0 +1,7 @@
+volumes:
+  dev_pgdata: {}
+  prod_pgdata: {}
+
+networks:
+  prod_net: {}
+  dev_net: {}

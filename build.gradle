@@ -1,0 +1,138 @@
+plugins {
+	id 'org.jetbrains.kotlin.jvm' version '1.9.25'
+	id 'org.jetbrains.kotlin.plugin.spring' version '1.9.25'
+	id 'org.springframework.boot' version '3.4.5'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.jetbrains.kotlin.plugin.jpa' version '1.9.25'
+}
+
+group = 'net.wandroid.todo'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
+	implementation 'org.jetbrains.kotlin:kotlin-reflect'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	implementation("com.google.firebase:firebase-admin:9.2.0")
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	//developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+	//database
+	implementation 'org.postgresql:postgresql'
+	implementation 'com.h2database:h2'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	
+
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+kotlin {
+	compilerOptions {
+		freeCompilerArgs.addAll '-Xjsr305=strict'
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+/**
+ 
+ DEV tasks
+ 
+ */
+
+ tasks.register("bootRunDev", org.springframework.boot.gradle.tasks.run.BootRun) {
+    group = "application"
+    description = "Run the application with the dev profile"
+    args = ["--spring.profiles.active=dev"]
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass.set("net.wandroid.todo.TodoApplicationKt")
+}
+
+tasks.register("dockerDevUp") {
+    group = "docker"
+    description = "Run dev environment with Docker Compose"
+    dependsOn("bootJar")
+    doLast {
+        exec {
+            commandLine "docker-compose", "-f", "docker/docker-compose.yml", "-f", "docker/docker-compose.dev.yml", "up", "--build"
+        }
+    }
+}
+
+tasks.register("dockerDevDown") {
+    group = "docker"
+    description = "Stop dev environment containers"
+    doLast {
+        exec {
+            commandLine "docker-compose", "-f", "docker/docker-compose.yml", "-f", "docker/docker-compose.dev.yml", "down"
+        }
+    }
+}
+
+tasks.register("cleanDevDb") {
+    group = "docker"
+    description = "Stop and remove dev containers and volumes (DB wipe)"
+    doLast {
+        exec {
+            commandLine("docker-compose", "-f", "docker/docker-compose.yml", "-f", "docker/docker-compose.dev.yml", "down", "-v")
+        }
+    }
+}
+
+/**
+ 
+ PROD tasks
+ 
+ */
+
+ tasks.register("bootRunProd", org.springframework.boot.gradle.tasks.run.BootRun) {
+    group = "application"
+    description = "Run the application with the prod profile"
+	dependsOn 'startPostgres'
+    args = ["--spring.profiles.active=prod"]
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass.set("net.wandroid.todo.TodoApplicationKt")
+}
+
+tasks.register("dockerProdUp") {
+    group = "docker"
+    description = "Run prod environment with Docker Compose"
+    dependsOn("bootJar")
+    doLast {
+        exec {
+            workingDir = file("docker").parentFile 
+            commandLine "docker-compose", "-f", "docker/docker-compose.yml", "-f", "docker/docker-compose.prod.yml", "up", "--build"
+        }
+    }
+}
+
+tasks.register("dockerProdDown") {
+    group = "docker"
+    description = "Stop prod environment containers"
+    doLast {
+        exec {
+            commandLine "docker-compose", "-f", "docker/docker-compose.yml", "-f", "docker/docker-compose.prod.yml", "down"
+        }
+    }
+}
