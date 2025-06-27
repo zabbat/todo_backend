@@ -21,6 +21,15 @@ configurations {
 	}
 }
 
+sourceSets {
+    main {
+        java.srcDirs += "src/main/kotlin"
+    }
+    test {
+        java.srcDirs += "src/test/kotlin"
+    }
+}
+
 repositories {
 	mavenCentral()
 }
@@ -40,7 +49,14 @@ dependencies {
 	
 
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        // Throw away Mockito if you prefer MockK
+        exclude group: "org.mockito"
+    }
+    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("io.mockk:mockk:1.14.4")
+    testImplementation("com.ninja-squad:springmockk:3.1.2")
+    testImplementation("com.google.truth:truth:1.4.2")
 	testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
@@ -121,7 +137,6 @@ tasks.register("dockerProdUp") {
     dependsOn("bootJar")
     doLast {
         exec {
-            workingDir = file("docker").parentFile 
             commandLine "docker-compose", "-f", "docker/docker-compose.yml", "-f", "docker/docker-compose.prod.yml", "up", "--build"
         }
     }

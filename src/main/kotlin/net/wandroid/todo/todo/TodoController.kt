@@ -50,17 +50,4 @@ public class TodoController(
     fun updateTodo(@RequestBody todoPatchRequest: TodoPatchRequest): TodoResponse {
         return todoService.updateTodo(request = todoPatchRequest)
     }
-
-    /*
-
-     @PatchMapping("/{id}")
-        fun updatePerson(
-            @PathVariable id: Long,
-            @RequestBody update: PersonPatchRequest
-        ): ResponseEntity<PersonResponse> {
-            val updated = personService.updatePerson(id, update)
-            return ResponseEntity.ok(updated)
-        }
-    */
-
 }
