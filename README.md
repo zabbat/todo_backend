@@ -124,6 +124,7 @@ todo_backend/
 
 For development certs are in docker/nginx/certs
 You wil have to generate certs. For deployment, you will probably not have nginx at all, or you will need a non selfsigned cert.
+Script to do this automatically will be added soon.
 
 To generate cert:
 
