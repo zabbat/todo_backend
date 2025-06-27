@@ -41,7 +41,6 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	implementation("com.google.firebase:firebase-admin:9.2.0")
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	//developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 	//database
 	implementation 'org.postgresql:postgresql'
 	implementation 'com.h2database:h2'
@@ -50,7 +49,7 @@ dependencies {
 
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        // Throw away Mockito if you prefer MockK
+        // For kotlin MockK is better.
         exclude group: "org.mockito"
     }
     testImplementation("org.springframework.security:spring-security-test")
@@ -122,14 +121,6 @@ tasks.register("cleanDevDb") {
  
  */
 
- tasks.register("bootRunProd", org.springframework.boot.gradle.tasks.run.BootRun) {
-    group = "application"
-    description = "Run the application with the prod profile"
-	dependsOn 'startPostgres'
-    args = ["--spring.profiles.active=prod"]
-    classpath = sourceSets.main.runtimeClasspath
-    mainClass.set("net.wandroid.todo.TodoApplicationKt")
-}
 
 tasks.register("dockerProdUp") {
     group = "docker"
