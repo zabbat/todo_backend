@@ -6,6 +6,7 @@ The project can be run with an Android emulator on the host to speed up backend 
 
 This used VS Code with kotlin to learn about the spring boot + kotlin capabilities of VS Code. Normally for kotlin Intellij would be used.
 
+
 ## Features
 
 - RESTful API for managing todos
@@ -15,6 +16,33 @@ This used VS Code with kotlin to learn about the spring boot + kotlin capabiliti
 - Docker Compose for easy local and production setup
 - Android Emulator access on host machine
 - MockK and AssertJ for expressive Kotlin testing
+
+
+## Architecture
+
+```text
+┌──────────────┐   Firebase ID Token   ┌─────────────────────┐
+│  Android App │ ───────────────────▶ │  AuthController      │
+└──────────────┘                      │  - validates token   │
+                                      │  - issues JWT        │
+                                      └─────────┬───────────┘
+                                                │  JWT (Bearer)
+┌─────────────────────────┐       ┌─────────────▼────────────┐
+│ TodoController (REST)   │◀──────│   Spring Security Filter │
+│  /api/todos/**          │       └─────────┬───────────────┘
+└─────────────────────────┘                 │
+                                            ▼
+                                     ┌───────────────┐
+                                     │  R2DBC Repo   │
+                                     └──────┬────────┘
+                                            ▼
+                                      ┌─────────────┐
+                                      │ PostgreSQL  │
+                                      └─────────────┘
+```
+
+---
+
 
 ## Prerequisites
 
